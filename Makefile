@@ -5,41 +5,20 @@
 #CC=gcc
 
 # Compiler options
-OPTS=-g
-OPTS=-O0
-#OPTS=-O2
+#OPTS=-g
+#OPTS=-O0
+OPTS=-O2
 
 UNAME = $(shell uname)
 
 CPPFLAGS+=-std=c++11
 
-ifeq ($(UNAME), Linux)
 CXX      ?= g++
-CPPFLAGS += $(OPTS) -Wall -pedantic
-LIBGL     = -lGLU -lGL
-LIBS      = -lXmu -lXext -lX11 -lXi -lm
+CPPFLAGS += $(OPTS) -Wall -pedantic -DFREEGLUT_STATIC
+LIBGL     = -lopengl32 -lglu32
+LIBS      = -static -mwindows -lwinmm -lm 
+LIBGLUT   = -lglu32 -lopengl32 -lfreeglut_static 
 
-# One of the following options only...
-
-# (1) OpenGLUT
-# LIBGLUT   = -L/usr/X11R6/lib -lopenglut
-# CPPFLAGS += -I/usr/X11R6/include -DGLUI_OPENGLUT
-
-# (2) FreeGLUT
-# LIBGLUT   = -L/usr/X11R6/lib -lfreeglut
-# CPPFLAGS += -I/usr/X11R6/include -DGLUI_FREEGLUT
-
-# (3) GLUT
-LIBGLUT   = -L/usr/X11R6/lib -lglut
-CPPFLAGS += -I/usr/X11R6/include
-endif
-
-ifeq ($(UNAME), Darwin)
-CXX      ?= g++
-CPPFLAGS += $(OPTS) -Wall -pedantic
-LIBGL     = -framework OpenGL
-LIBGLUT   = -framework GLUT
-endif
 
 #######################################
 
@@ -60,11 +39,11 @@ GLUI_TOOLS = bin/ppm2array
 
 .PHONY: all setup examples tools clean depend doc doc-pdf doc-dist dist
 
-all: setup $(GLUI_LIB) examples tools
+all: $(GLUI_LIB) examples tools
 
 setup:
-	mkdir -p bin
-	mkdir -p lib
+	mkdir bin
+	mkdir lib
 
 examples: $(GLUI_EXAMPLES)
 
